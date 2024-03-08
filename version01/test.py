@@ -1,0 +1,3 @@
+PROTON_MASS = 1.67262192 * (10 ** -27)
+
+print(1 / PROTON_MASS)
