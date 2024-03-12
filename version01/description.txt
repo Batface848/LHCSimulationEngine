@@ -1,1 +1,2 @@
-Stationary Particle Test
+Version 1: Stationary Particle Test
+Version 2: Basic Newtonian Mechanics (Kinematics, Dynamics, Verlet Integration)
