@@ -1,4 +1,5 @@
 import math
+from mathematicalMethods import *
 
 # Configuration
 RATE_OF_CALCULATIONS = 200 # How fast the LHCSimulation can run, Time Period = 1 / RATE_OF_CALCULATIONS
