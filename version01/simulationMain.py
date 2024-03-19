@@ -5,6 +5,7 @@ import vizconnect # Configuration presets
 import vizact # Passes methods into Vizard task manager
 from sprites import *
 from constants import *
+from mathematicalMethods import *
 
 # Only ran once
 viz.window.setFullscreen() # Makes testing easier
@@ -16,10 +17,11 @@ viz.go()
 class LHCSimulation:
     def __init__(self):
         vizshape.addGrid(step = 1.0) # Adds a grid for easier testing
-        self.protonOne = Proton(ORIGIN, PURPLE, PROTON_RADIUS) # Test proton
-        self.protonTwo = Proton([0, 0, 5], GREEN, PROTON_RADIUS)
-        self.cameraPos = [0, 10, 0]
-        self.cameraAngle = [0, 90, 0] # Pitch, yaw, tilt
+        self.collider = Collider(ORIGIN)
+        self.protonOne = Proton([0, 5, 0], PURPLE, PROTON_RADIUS, self.collider) # Test proton
+        self.protonTwo = Proton([0, 10, 0], GREEN, PROTON_RADIUS, self.collider)
+        self.cameraPos = [50, 50, 50]
+        self.cameraAngle = [90, 0, 0] # Pitch, yaw, tilt
         
     def main(self):
         '''Main method'''
