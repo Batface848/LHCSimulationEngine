@@ -134,7 +134,7 @@ class GasPump:
         self.object.color(self.colour)
         self.object.alpha(0.8)
         
-class SourceChamber:
+class Tube:
     def __init__(self, pos, colour, radius, height):
         self.pos = pos
         self.colour = colour

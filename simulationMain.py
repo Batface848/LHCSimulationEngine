@@ -21,7 +21,7 @@ class LHCSimulation:
         self.points = []
         self.GUIObjects = []
         self.gasPump = GasPump([0, 5, 20], BLUE, (3, 10, 3))
-        self.sourceChamber = SourceChamber([0, 5, 15.5], CYAN, 1, 6)
+        self.pumpTube = Tube([0, 5, 13.5], CYAN, 1, 10)
         self.collider = Collider([30,0,30], BLUE, 10, 3)
         self.pointOne = HydrogenAtom([10, 0, 10], SIMULATED_PROTON_RADIUS, [0, 0, 0], [-1, 0, 0]) # Test point
         self.points.append(self.pointOne)
@@ -42,11 +42,11 @@ class LHCSimulation:
         viz.MainView.setPosition(self.cameraPos) # Camera
         viz.MainView.setEuler(self.cameraAngle)
         self.drawSprites()
-        for point in self.points:
-            point.enablePhysics()
-        self.checkPointCollisionDetection()
+        self.checkPointCollisions()
         self.drawGUI()
         viz.callback(viz.BUTTON_EVENT, self.getGUIState)
+        for point in self.points:
+            point.enablePhysics()
         self.frames += 1
 
     def drawSprites(self):
@@ -54,7 +54,7 @@ class LHCSimulation:
         for point in self.points:
             point.draw()
         self.gasPump.draw()
-        self.sourceChamber.draw()
+        self.pumpTube.draw()
         self.collider.draw()
         
     def updateCam(self):
@@ -81,11 +81,11 @@ class LHCSimulation:
         
     def spawnHydrogen(self):
         '''Method that allows a hydrogen atom to be "pumped" from the gas pump'''
-        hydrogenPoint = HydrogenAtom([0, 5, 18.5], SIMULATED_PROTON_RADIUS, [0, 0, -0.01], [0, 0, -1])
+        hydrogenPoint = HydrogenAtom([0, 5, 18.5], SIMULATED_PROTON_RADIUS, [0, 0, -0.1], [0, 0, -10])
         self.points.append(hydrogenPoint)
 
-    def checkPointCollisionDetection(self):
-        '''Method that checks for collision detection between all points'''
+    def checkPointCollisions(self):
+        '''Method that checks for collisions between all points'''
         self.distanceMatrix = []
         for i in range(len(self.points)):
             rowVector = []
@@ -101,6 +101,10 @@ class LHCSimulation:
             for j in range(i, len(self.distanceMatrix)):
                 if self.distanceMatrix[i][j] <= (self.points[i].radius + self.points[j].radius) and self.distanceMatrix[i][j] >= 0:
                     print("COLLIDE")
+                    
+    def checkPointCylinderCollisions(self, cylinder):
+        '''Method that checks for collisions between the points and the cylinders'''
+        pass
                     
                         
         
