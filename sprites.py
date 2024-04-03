@@ -20,6 +20,7 @@ class Point:
         self.velocity = [0, 0, 0]
         self.acceleration = [0, 0, 0]
         self.mass = SIMULATED_PROTON_MASS
+        self.momentum = [0, 0, 0]
         self.force = initialForce
         self.volume = 4/3 * math.pi * ((self.radius) ** 3)
         self.density = self.mass / self.volume
@@ -39,9 +40,11 @@ class Point:
             self.acceleration[axis] = self.force[axis] / self.mass
             self.oldPos[axis] -= self.acceleration[axis] / (RATE_OF_CALCULATIONS ** 2)
             self.velocity[axis] = (self.pos[axis] - self.oldPos[axis]) * RATE_OF_CALCULATIONS # Rate of calculations used to reduce floating point errors
+            self.momentum[axis] = self.mass * self.velocity[axis]
         self.oldPos = copy.deepcopy(self.pos)
         for axis in range(3):
             self.pos[axis] += self.velocity[axis] / RATE_OF_CALCULATIONS
+
         
     def draw(self):
         '''Method that draws the point'''
