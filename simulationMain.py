@@ -23,14 +23,11 @@ class LHCSimulation:
         self.pumpTubes = []
         self.GUIObjects = []
         self.gasPump = GasPump([0, 5, 20], BLUE, (3, 10, 3))
-        for i in range(3):
-            pumpTube = Tube([0, 5, 13.5 - i * 10], CYAN, 0.5, 10)
+        for i in range(2):
+            pumpTube = Tube([0, 5, 13.5 - i * 10], CYAN, 0.5, 10, vizshape.AXIS_Z)
             self.pumpTubes.append(pumpTube)
+        self.sourceChamber = SourceChamber([0, 5, -4], WHITE, 3, 5, vizshape.AXIS_Z)
         self.collider = Collider([30,0,30], BLUE, 10, 3)
-        self.pointOne = HydrogenAtom([3, 2, 5], SIMULATED_PROTON_RADIUS, [0, 0, 0], [-0.1, 0.6, 0.5]) # Test point
-        self.points.append(self.pointOne)
-        self.pointTwo = Point([2, 8, 10], BLUE, SIMULATED_PROTON_RADIUS, [0, 0, 0], [0.1, -0.6, -0.5])
-        self.points.append(self.pointTwo)
         self.centreBall = vizshape.addSphere()
         self.cameraPos = [10, 10, 10] # x, y, z
         self.cameraAngle = [0, 0, 0] # Yaw, pitch, roll
@@ -50,17 +47,20 @@ class LHCSimulation:
         self.drawGUI()
         for point in self.points:
             point.enablePhysics()
+            print(point.pos)
         self.checkPointCollisions(self.points)
+        self.checkPointWallCollisions(self.sourceChamber.wall)
         self.frames += 1
 
     def drawSprites(self):
         '''Method that draws all sprites required from the sprites file'''
         for point in self.points:
             point.draw()
-        self.gasPump.draw()
+        self.gasPump.draw(1)
         for tube in self.pumpTubes:
-            tube.draw()
-        self.collider.draw()
+            tube.draw(0.5)
+        self.sourceChamber.draw(0.5)
+        self.collider.draw(0.5)
         
     def updateCam(self):
         '''Method that updates the camera position based on the camera's new position'''
@@ -86,7 +86,7 @@ class LHCSimulation:
         
     def spawnHydrogen(self):
         '''Method that allows a hydrogen atom to be "pumped" from the gas pump'''
-        hydrogenPoint = HydrogenAtom([0, 5, 18.5], SIMULATED_PROTON_RADIUS, [0, 0, -0.1], [0, 0, 10])
+        hydrogenPoint = HydrogenAtom([0, 5, 18.5], SIMULATED_PROTON_RADIUS, [0, 0, -0.1], [0, 0, -1])
         self.points.append(hydrogenPoint)
 
     def checkPointCollisions(self, points):
@@ -119,14 +119,12 @@ class LHCSimulation:
                     points[i].pos[2] -= changeInMomentum * quartiles[2] * math.cos(collisionNormal[1]) * math.cos(collisionNormal[0]) / (points[i].mass * RATE_OF_CALCULATIONS)
                     points[j].pos[2] += changeInMomentum * quartiles[2] * math.cos(collisionNormal[1]) * math.cos(collisionNormal[0]) / (points[j].mass * RATE_OF_CALCULATIONS)
                     
-    def checkPointCylinderCollisions(self, cylinder):
-        '''Method that checks for collisions between the points and the cylinders'''
-        pass
-                    
-                        
+    def checkPointWallCollisions(self, cylinder):
+        '''Method that checks for collisions between the points and the walls - specifically the source chamber walls'''
+        for point in self.points:
+            if (point.pos[2]) - (cylinder.pos[2]) <= (point.radius + cylinder.height / 2):
+                currentZSpeed = point.velocity[2]
+                point.oldPos[2] = point.pos[2] + (currentZSpeed / RATE_OF_CALCULATIONS)
         
-
-
-
 engine = LHCSimulation()
 vizact.ontimer(TIME_PERIOD, engine.main) # Final line of code

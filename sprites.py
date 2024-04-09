@@ -5,6 +5,7 @@ import vizshape
 from constants import *
 from mathematicalMethods import *
 import math
+import scipy
 import copy
 
 class Point:
@@ -132,24 +133,44 @@ class GasPump:
         self.size = size
         self.object = vizshape.addBox(size = size, top = True)
         
-    def draw(self):
+    def draw(self, alpha):
         self.object.setPosition(self.pos)
         self.object.color(self.colour)
-        self.object.alpha(0.8)
-        
-class Tube:
-    def __init__(self, pos, colour, radius, height):
+        self.object.alpha(alpha)
+
+class Cylinder:
+    def __init__(self, pos, colour, radius, height, axis):
         self.pos = pos
         self.colour = colour
         self.radius = radius
         self.height = height
-        self.object = vizshape.addCylinder(height = self.height, radius = self.radius, axis = vizshape.AXIS_Z)
-        
-    def draw(self):
-        '''Method that draws the source chamber'''
+        self.axis = axis
+        self.object = vizshape.addCylinder(height = self.height, radius = self.radius, axis = self.axis)
+    
+    def draw(self, alpha):
+        '''Method that draws the cylinders'''
         self.object.setPosition(self.pos)
         self.object.color(self.colour)
-        self.object.alpha(0.5)
+        self.object.alpha(alpha)
+
+        
+class Tube(Cylinder):
+    def __init__(self, pos, colour, radius, height, axis):
+        super().__init__(pos, colour, radius, height, axis)
+        
+    def draw(self, alpha):
+        '''Method that draws the tubes'''
+        super().draw(alpha)
+
+class SourceChamber(Cylinder):
+    def __init__(self, pos, colour, radius, height, axis):
+        super().__init__(pos, colour, radius, height, axis)
+        self.wall = Cylinder([0, 5, -7], GREEN, 4.5, 1, vizshape.AXIS_Z)
+
+    def draw(self, alpha):
+        '''Method that draws the source chamber'''
+        super().draw(alpha)
+        self.wall.draw(0.5)
 
 class Collider:
     def __init__(self, pos, colour, radius, tubeRadius):
@@ -159,11 +180,11 @@ class Collider:
         self.tubeRadius = tubeRadius
         self.object = vizshape.addTorus(radius = self.radius, tubeRadius = self.tubeRadius)
 
-    def draw(self):
+    def draw(self, alpha):
         '''Method that draws the collider'''
         self.object.setPosition(self.pos)
         self.object.color((self.colour))
-        self.object.alpha(0.5)
+        self.object.alpha(alpha)
 
         
     

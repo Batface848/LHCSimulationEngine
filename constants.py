@@ -23,8 +23,10 @@ PROTON_CHARGE = 1.6 * (10 ** -19)
 PERMITTIVITY_OF_FREE_SPACE = 8.85418782 * (10 ** -12)
 
 # Colours
+WHITE = (255, 255, 255)
 PURPLE = (3, 0, 5)
 GREEN = (0, 10, 0)
 BLUE = (0, 0, 10)
 RED = (10, 0, 0)
 CYAN = (0, 10, 10)
+YELLOW = (10, 10, 0)
