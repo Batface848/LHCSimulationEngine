@@ -27,7 +27,7 @@ class LHCSimulation:
             pumpTube = Tube([0, 5, 13.5 - i * 10], CYAN, 0.5, 10, vizshape.AXIS_Z)
             self.pumpTubes.append(pumpTube)
         self.sourceChamber = SourceChamber([0, 5, -4], WHITE, 3, 5, vizshape.AXIS_Z)
-        self.collider = Collider([30,0,30], BLUE, 10, 3)
+        self.collider = Collider([30, 0, 30], BLUE, 10, 3)
         self.centreBall = vizshape.addSphere()
         self.cameraPos = [10, 10, 10] # x, y, z
         self.cameraAngle = [0, 0, 0] # Yaw, pitch, roll
