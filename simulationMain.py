@@ -27,12 +27,12 @@ class LHCSimulation:
             pumpTube = Tube([0, 5, 13.5 - i * 10], CYAN, 0.5, 10, vizshape.AXIS_Z)
             self.pumpTubes.append(pumpTube)
         self.sourceChamber = SourceChamber([0, 5, -4], WHITE, 3, 5, vizshape.AXIS_Z)
+        self.chamberActivated = False
         self.collider = Collider([30, 0, 30], BLUE, 10, 3)
         self.centreBall = vizshape.addSphere()
         self.cameraPos = [10, 10, 10] # x, y, z
         self.cameraAngle = [0, 0, 0] # Yaw, pitch, roll
         viz.callback(viz.BUTTON_EVENT, self.getGUIState)
-        self.frames = 0
         
     def main(self):
         '''Main method'''
@@ -47,10 +47,8 @@ class LHCSimulation:
         self.drawGUI()
         for point in self.points:
             point.enablePhysics()
-            print(point.pos)
         self.checkPointCollisions(self.points)
         self.checkPointWallCollisions(self.sourceChamber.wall)
-        self.frames += 1
 
     def drawSprites(self):
         '''Method that draws all sprites required from the sprites file'''
@@ -72,22 +70,43 @@ class LHCSimulation:
         '''Method that draws the interactive GUI on the screen'''
         self.spawnButton = viz.addButtonLabel("Add Hydrogen")
         self.spawnButton.setPosition(0.1, 0.95)
+        self.activateChamberButton = viz.addButtonLabel("Activate Source Chamber")
+        self.activateChamberButton.setPosition(0.16, 0.875)
+        self.resetButton = viz.addButtonLabel("Reset System")
+        self.resetButton.setPosition(0.0975, 0.8)
         self.GUIObjects.append(self.spawnButton)
+        self.GUIObjects.append(self.activateChamberButton)
+        self.GUIObjects.append(self.resetButton)
         # self.spawnButton.color(GREEN)
-        
+    
+    
     def getGUIState(self, obj, state):
-        for obj in self.GUIObjects:
-            if obj == self.spawnButton:
-                if state == viz.DOWN:
-                    self.spawnHydrogen()
-                else:
-                    pass
-        
+        if obj == self.spawnButton:
+            if state == viz.DOWN:
+                self.spawnHydrogen()
+            else:
+                pass
+        elif obj == self.activateChamberButton:
+            if state == viz.DOWN:
+                self.removeCylinderWall()
+            else:
+                pass
+        elif obj == self.resetButton:
+            if state == viz.DOWN:
+                self.resetSystem()
+            else:
+                pass
         
     def spawnHydrogen(self):
         '''Method that allows a hydrogen atom to be "pumped" from the gas pump'''
         hydrogenPoint = HydrogenAtom([0, 5, 18.5], SIMULATED_PROTON_RADIUS, [0, 0, -0.1], [0, 0, -1])
         self.points.append(hydrogenPoint)
+        
+    def removeCylinderWall(self):
+        '''Method that removes the source chamber wall'''
+        self.sourceChamber.wall.object.remove()
+        self.chamberActivated = True
+        
 
     def checkPointCollisions(self, points):
         '''Method that checks for collisions between all points'''
@@ -121,10 +140,15 @@ class LHCSimulation:
                     
     def checkPointWallCollisions(self, cylinder):
         '''Method that checks for collisions between the points and the walls - specifically the source chamber walls'''
-        for point in self.points:
-            if (point.pos[2]) - (cylinder.pos[2]) <= (point.radius + cylinder.height / 2):
-                currentZSpeed = point.velocity[2]
-                point.oldPos[2] = point.pos[2] + (currentZSpeed / RATE_OF_CALCULATIONS)
+        if not self.chamberActivated:
+            for point in self.points:
+                if (point.pos[2]) - (cylinder.pos[2]) <= (point.radius + cylinder.height / 2):
+                    currentZSpeed = point.velocity[2]
+                    point.oldPos[2] = point.pos[2] + (currentZSpeed / RATE_OF_CALCULATIONS)
+                    
+    def resetSystem(self):
+        '''Method that resets the system'''
+        pass
         
 engine = LHCSimulation()
 vizact.ontimer(TIME_PERIOD, engine.main) # Final line of code
