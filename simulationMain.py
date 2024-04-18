@@ -22,7 +22,7 @@ class LHCSimulation:
         self.points = []
         self.pumpTubes = []
         self.GUIObjects = []
-        self.gasPump = GasPump([0, 5, 20], BLUE, (3, 10, 3))
+        self.gasPump = Cuboid([0, 5, 20], BLUE, (3, 10, 3))
         for i in range(2):
             pumpTube = Tube([0, 5, 13.5 - i * 10], CYAN, 0.5, 10, vizshape.AXIS_Z)
             self.pumpTubes.append(pumpTube)
@@ -32,7 +32,10 @@ class LHCSimulation:
         self.centreBall = vizshape.addSphere()
         self.cameraPos = [10, 10, 10] # x, y, z
         self.cameraAngle = [0, 0, 0] # Yaw, pitch, roll
-        viz.callback(viz.BUTTON_EVENT, self.getGUIState)
+        self.frames = 0
+        self.previousFrame = None
+        self.maxTime = 0.25 * RATE_OF_CALCULATIONS
+        self.drawGUI()
         
     def main(self):
         '''Main method'''
@@ -41,14 +44,16 @@ class LHCSimulation:
 
     def run(self):
         '''Runner method'''
+        self.frames += 1
         viz.MainView.setPosition(self.cameraPos) # Camera
         viz.MainView.setEuler(self.cameraAngle)
         self.drawSprites()
-        self.drawGUI()
         for point in self.points:
             point.enablePhysics()
         self.checkPointCollisions(self.points)
         self.checkPointWallCollisions(self.sourceChamber.wall)
+        viz.callback(viz.BUTTON_EVENT, self.getGUIState)
+        
 
     def drawSprites(self):
         '''Method that draws all sprites required from the sprites file'''
@@ -83,7 +88,15 @@ class LHCSimulation:
     def getGUIState(self, obj, state):
         if obj == self.spawnButton:
             if state == viz.DOWN:
-                self.spawnHydrogen()
+                if self.previousFrame == None:
+                    self.spawnHydrogen()
+                    self.previousFrame = self.frames
+                    print("SPAWNED")
+                else:
+                    if self.frames - self.previousFrame >= self.maxTime:
+                        self.spawnHydrogen()
+                        self.previousFrame = self.frames
+                        print("SPAWNED")
             else:
                 pass
         elif obj == self.activateChamberButton:
