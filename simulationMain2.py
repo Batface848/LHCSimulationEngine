@@ -241,8 +241,7 @@ class LHCSimulation:
         self.collided = True
         self.readingsLog.initialGEVTextObject.object.message("Initial Energy: 13,000GeV")
         midpoint = findMidpoint(proton1.pos, proton2.pos)
-        chosenGeVValue = 0.1
-        # chosenGeVValue = round(random.uniform(0.1, 3000.0), 1)
+        chosenGeVValue = round(random.uniform(0.1, 3000.0), 1)
         possibilities = ["Elastic Scattering", "Inelastic Scattering", "Deep Inelastic Scattering", "Gluon-Gluon Fusion", "Higgs Production", "Quark-Antiquark Annihilation", "Jets Formation", "Parton-Parton Scattering", "Resonance Production"]
         for point in self.points.copy():
             point.object.remove()
