@@ -1,14 +1,24 @@
 import math
+import numpy as np
+import scipy as sp
+import sympy as symp
+from constants import *
 
 def getTwoDAngle(cordOne, cordTwo): 
     '''Method that finds the 2D angle'''
-    deltaZ = abs(cordTwo[2] - cordOne[2]) # abs() required because direction is obtained through getQuartiles and this method is to simply find the magnitude of angle
-    deltaX = abs(cordTwo[0] - cordOne[0])
-
+    deltaZ = cordTwo[2] - cordOne[2] # abs() required because direction is obtained through getQuartiles and this method is to simply find the magnitude of angle
+    deltaX = cordTwo[0] - cordOne[0]
+    
     if deltaX == 0:
-        return math.pi / 2
+        if deltaZ >= 0:
+            return 3 * math.pi / 2
+        if deltaZ < 0:
+            return math.pi / 2
+    angle = math.atan2(deltaZ, deltaX)
+    if angle >= 0:
+        return angle
     else:
-        return math.atan(deltaZ / deltaX)
+        return (math.pi * 2 + angle)
         
 def getThreeDAngle(cordOne, cordTwo):
     '''Method that finds the 3D angle'''
@@ -33,7 +43,7 @@ def getThreeDAngle(cordOne, cordTwo):
         
 
 def getMagnitude(cordOne, cordTwo):
-    '''Method that finds the ma[gnitude between two points'''
+    '''Method that finds the magnitude between two points'''
     diff = [0, 0, 0]
     for d in range(3):
         diff[d] = cordTwo[d] - cordOne[d]
@@ -50,3 +60,23 @@ def getQuartiles(cordOne, cordTwo):
         multiplier[2] = -1
 
     return multiplier
+
+def vectorCrossProduct(vector1, vector2):
+    crossProduct = []
+    crossProduct.append((vector1[1] * vector2[2]) - (vector1[2] * vector2[1]))
+    crossProduct.append((vector1[2] * vector2[0]) - (vector1[0] * vector2[2]))
+    crossProduct.append((vector1[0] * vector2[1]) - (vector1[1] * vector2[0]))
+
+    return crossProduct
+    
+def findMidpoint(cordOne, cordTwo):
+    midpoint = [0, 0, 0]
+    for axis in range(3):
+        midpoint[axis] = (cordOne[axis] + cordTwo[axis]) / 2
+    
+    return midpoint
+
+def getCylinderSurfaceArea(radius, height):
+    return 2 * math.pi * radius * height
+
+
