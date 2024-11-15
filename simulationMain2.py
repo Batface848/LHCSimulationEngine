@@ -8,7 +8,6 @@ import random
 from sprites2 import *
 from constants import *
 from mathematicalMethods import *
-import random
 
 
 
@@ -241,7 +240,7 @@ class LHCSimulation:
         self.collided = True
         self.readingsLog.initialGEVTextObject.object.message("Initial Energy: 13,000GeV")
         midpoint = findMidpoint(proton1.pos, proton2.pos)
-        chosenGeVValue = round(random.uniform(0.1, 3000.0), 1)
+        chosenGeVValue = round(random.uniform(0.1, 10000.0), 1)
         possibilities = ["Elastic Scattering", "Inelastic Scattering", "Deep Inelastic Scattering", "Gluon-Gluon Fusion", "Higgs Production", "Quark-Antiquark Annihilation", "Jets Formation", "Parton-Parton Scattering", "Resonance Production"]
         for point in self.points.copy():
             point.object.remove()
@@ -570,14 +569,16 @@ class LHCSimulation:
                 self.products.append(fakeBaryon)
                 self.textObjects.append(fakeMesonText)
                 self.textObjects.append(fakeBaryonText)
-                        
-        monteCarloProbability = 1 - abs(chosenGeVValue - 125) / 125
-        if monteCarloProbability < 0:
-            self.higgsProbabilities.append(0.0)
+        
+        self.higgsProbabilities.append(chosenGeVValue)
+        meanData = sum(self.higgsProbabilities) / len(self.higgsProbabilities)
+        standardDeviationData = 0.0
+        if len(self.higgsProbabilities) > 1:
+            standardDeviationData = math.sqrt(getVariance(self.higgsProbabilities))
+            higgsProbability = obtainNormalProbabilityDensity(125, meanData, standardDeviationData)
         else:
-            self.higgsProbabilities.append(monteCarloProbability)
-        meanProbability = round(sum(self.higgsProbabilities) / len(self.higgsProbabilities), 10)
-        self.readingsLog.higgsProbabilityTextObject.object.message("Higgs Probability: " + str(meanProbability))
+            higgsProbability = 1.0 if chosenGeVValue <= 126 and chosenGeVValue >= 124 else 0.0
+        self.readingsLog.higgsProbabilityTextObject.object.message("Higgs Probability: " + str(higgsProbability))
         
     def resetSystem(self):
         for point in self.points:
